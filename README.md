@@ -1,4 +1,4 @@
-# FRC 2026 REBUILT Robot Code
+# FRC Rebuilt 2026
 
 Robot code for our 2026 FRC season (REBUILT), written in Java with WPILib's command-based framework.
 
