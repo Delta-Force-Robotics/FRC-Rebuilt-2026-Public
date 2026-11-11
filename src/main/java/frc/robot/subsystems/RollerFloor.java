@@ -86,12 +86,15 @@ public class RollerFloor extends SubsystemBase {
     motor.setControl(voltageRequest.withOutput(volts));
   }
 
-  @Override
-  public void simulationPeriodic() {
+  /**
+   * Steps the motor simulation forward. Runs in simulation only, from a loop faster than the main
+   * robot loop (see {@link frc.robot.RobotContainer}).
+   */
+  public void updateSimulation(double dtSeconds) {
     var simState = motor.getSimState();
     simState.setSupplyVoltage(RobotController.getBatteryVoltage());
     sim.setInputVoltage(simState.getMotorVoltage());
-    sim.update(0.02);
+    sim.update(dtSeconds);
     simState.setRawRotorPosition(
         sim.getAngularPositionRotations() * RollerFloorConstants.GEAR_RATIO);
     simState.setRotorVelocity(sim.getAngularVelocityRPM() / 60.0 * RollerFloorConstants.GEAR_RATIO);

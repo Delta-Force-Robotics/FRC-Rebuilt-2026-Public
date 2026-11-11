@@ -276,12 +276,15 @@ public class Intake extends SubsystemBase {
     updatePivotSimSensors();
   }
 
-  @Override
-  public void simulationPeriodic() {
+  /**
+   * Steps the motor simulation forward. Runs in simulation only, from a loop faster than the main
+   * robot loop (see {@link frc.robot.RobotContainer}).
+   */
+  public void updateSimulation(double dtSeconds) {
     var pivotSimState = pivotMotor.getSimState();
     pivotSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
     pivotSim.setInputVoltage(pivotSimState.getMotorVoltage());
-    pivotSim.update(0.02);
+    pivotSim.update(dtSeconds);
     updatePivotSimSensors();
   }
 

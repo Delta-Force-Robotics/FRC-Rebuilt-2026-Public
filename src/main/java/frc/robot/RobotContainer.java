@@ -7,6 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,6 +42,12 @@ public class RobotContainer {
   // Game piece simulation (null on the real robot)
   private final FuelSim fuelSim;
 
+  // Mechanism physics loop in simulation. The simulated motor controllers run their control loops
+  // continuously, so the physics has to update faster than the 20 ms robot loop or the
+  // controllers act on stale readings (fast mechanisms like the shooter never settle).
+  private static final double MECHANISM_SIM_PERIOD_SECONDS = 0.005;
+  private Notifier mechanismSimNotifier = null;
+
   // Controller
   private final CommandPS5Controller controller = new CommandPS5Controller(0);
 
@@ -56,6 +63,9 @@ public class RobotContainer {
         RobotBase.isSimulation()
             ? new FuelSim(drive.getDriveSimulation(), intake, feeder, shooter)
             : null;
+    if (RobotBase.isSimulation()) {
+      startMechanismSimulation();
+    }
 
     // PathPlanner named commands
     NamedCommands.registerCommand("ShootCommand1s", autoShoot().withTimeout(1.0));
@@ -187,6 +197,20 @@ public class RobotContainer {
           new Pose3d(0.159 + hopperOffsetX, 0.0, 0.395, new Rotation3d()),
           new Pose3d(-0.283, 0.0, 0.485, new Rotation3d(0.0, hoodAngleRad, 0.0))
         });
+  }
+
+  private void startMechanismSimulation() {
+    mechanismSimNotifier =
+        new Notifier(
+            () -> {
+              intake.updateSimulation(MECHANISM_SIM_PERIOD_SECONDS);
+              rollerFloor.updateSimulation(MECHANISM_SIM_PERIOD_SECONDS);
+              feeder.updateSimulation(MECHANISM_SIM_PERIOD_SECONDS);
+              shooter.updateSimulation(MECHANISM_SIM_PERIOD_SECONDS);
+              hood.updateSimulation(MECHANISM_SIM_PERIOD_SECONDS);
+            });
+    mechanismSimNotifier.setName("MechanismSim");
+    mechanismSimNotifier.startPeriodic(MECHANISM_SIM_PERIOD_SECONDS);
   }
 
   /** Called every loop in simulation to update the game piece simulation. */

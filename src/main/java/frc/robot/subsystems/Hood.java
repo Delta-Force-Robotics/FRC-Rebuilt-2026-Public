@@ -113,12 +113,15 @@ public class Hood extends SubsystemBase {
     return position.getValueAsDouble();
   }
 
-  @Override
-  public void simulationPeriodic() {
+  /**
+   * Steps the motor simulation forward. Runs in simulation only, from a loop faster than the main
+   * robot loop (see {@link frc.robot.RobotContainer}).
+   */
+  public void updateSimulation(double dtSeconds) {
     var simState = motor.getSimState();
     simState.setSupplyVoltage(RobotController.getBatteryVoltage());
     sim.setInputVoltage(simState.getMotorVoltage());
-    sim.update(0.02);
+    sim.update(dtSeconds);
     simState.setRawRotorPosition(
         sim.getAngularPositionRotations() * HoodConstants.TOTAL_GEAR_RATIO);
     simState.setRotorVelocity(sim.getAngularVelocityRPM() / 60.0 * HoodConstants.TOTAL_GEAR_RATIO);

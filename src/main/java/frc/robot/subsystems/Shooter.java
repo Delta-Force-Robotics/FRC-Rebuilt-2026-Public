@@ -157,12 +157,15 @@ public class Shooter extends SubsystemBase {
     return velocitySetpointRPS;
   }
 
-  @Override
-  public void simulationPeriodic() {
+  /**
+   * Steps the motor simulation forward. Runs in simulation only, from a loop faster than the main
+   * robot loop (see {@link frc.robot.RobotContainer}).
+   */
+  public void updateSimulation(double dtSeconds) {
     var simState = leader.getSimState();
     simState.setSupplyVoltage(RobotController.getBatteryVoltage());
     sim.setInputVoltage(simState.getMotorVoltage());
-    sim.update(0.02);
+    sim.update(dtSeconds);
     simState.setRawRotorPosition(sim.getAngularPositionRotations());
     simState.setRotorVelocity(sim.getAngularVelocityRPM() / 60.0);
   }
