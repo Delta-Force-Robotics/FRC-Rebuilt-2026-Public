@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.constants.ShootComConstants;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -53,8 +54,6 @@ public class FuelSim {
   private static final int VOLLEY_MAX = 4;
 
   // Hub position and opening height on the field in meters
-  private static final double HUB_X = 4.5974;
-  private static final double HUB_Y = 4.0345;
   private static final double HUB_Z = 1.85;
   private static final double GRAVITY = 9.81;
   /** Launch angle used when no trajectory reaches the hub (45 degrees gives the best range). */
@@ -169,7 +168,7 @@ public class FuelSim {
       // Find each barrel's position on the field to get an accurate distance to the hub
       Translation2d barrelOffset = new Translation2d(SHOOTER_OFFSET_X, SHOOTER_Y_OFFSETS[i]);
       Translation2d barrel = robotPose.getTranslation().plus(barrelOffset.rotateBy(shooterFacing));
-      double horizontalDistance = Math.hypot(barrel.getX() - HUB_X, barrel.getY() - HUB_Y);
+      double horizontalDistance = barrel.getDistance(ShootComConstants.HUB_BLUE);
       double pitchDegrees = Math.toDegrees(computeLowArcAngle(speed, horizontalDistance, deltaH));
 
       final int barrelIndex = i;

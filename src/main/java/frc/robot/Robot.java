@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.HubShiftUtil;
-import frc.robot.util.LimelightHelpers;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -20,10 +19,6 @@ public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
 
   public Robot() {
-    // Setup 3A Limelights
-    LimelightHelpers.setupPortForwardingUSB(5); // limelight-left
-    LimelightHelpers.setupPortForwardingUSB(3); // limelight-right
-
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);

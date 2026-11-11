@@ -21,7 +21,7 @@ src/main/java/frc/robot/
   constants/            CAN IDs and tuning values
   generated/            Swerve constants (Phoenix Tuner X)
   sim/                  maple-sim physics: drivetrain and game piece simulation
-  util/                 Hub shift timing, Limelight helpers
+  util/                 Hub shift timing and Phoenix helpers
 ```
 
 ## Logging

@@ -41,17 +41,13 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Intake extends SubsystemBase {
 
-  public enum IntakeState {
+  private enum IntakeState {
     /** Pivot at stowed position, roller stopped. */
     STOWED,
     /** Pivot moving toward deployed position, roller running. */
     DEPLOYING,
     /** Pivot at deployed position, roller running to intake game pieces. */
     INTAKING,
-    /** Pivot at deployed position, roller stopped. */
-    DEPLOYED_IDLE,
-    /** Pivot moving back to stowed position, roller running to push fuel into the robot. */
-    RETRACTING,
     /** Pivot moving to partial stow position, roller stopped. */
     PARTIAL_STOWING,
     /** Pivot at partial stow position, roller stopped. */
@@ -178,11 +174,6 @@ public class Intake extends SubsystemBase {
       }
       case INTAKING -> setOutputs(
           IntakeConstants.PIVOT_DEPLOYED_ROTATIONS, IntakeConstants.ROLLER_INTAKE_VOLTS);
-      case DEPLOYED_IDLE -> setOutputs(IntakeConstants.PIVOT_DEPLOYED_ROTATIONS, 0.0);
-      case RETRACTING -> {
-        setOutputs(IntakeConstants.PIVOT_STOWED_ROTATIONS, IntakeConstants.ROLLER_INTAKE_VOLTS);
-        if (isPivotNear(IntakeConstants.PIVOT_STOWED_ROTATIONS)) state = IntakeState.STOWED;
-      }
       case PARTIAL_STOWING -> {
         setOutputs(IntakeConstants.PIVOT_PARTIAL_STOW_ROTATIONS, 0.0);
         if (isPivotNear(IntakeConstants.PIVOT_PARTIAL_STOW_ROTATIONS)) {
@@ -226,39 +217,10 @@ public class Intake extends SubsystemBase {
     rollerMotor.setControl(rollerRequest.withOutput(volts));
   }
 
-  /**
-   * Start deploying the intake and run the roller. If already deployed idle, immediately resumes
-   * the roller without re-deploying.
-   */
+  /** Deploy the intake and run the roller. Does nothing if it is already deploying or intaking. */
   public void deploy() {
-    if (state == IntakeState.STOWED
-        || state == IntakeState.PARTIAL_STOWED
-        || state == IntakeState.PARTIAL_STOWING
-        || state == IntakeState.SLOW_PARTIAL_STOWING) {
+    if (state != IntakeState.DEPLOYING && state != IntakeState.INTAKING) {
       state = IntakeState.DEPLOYING;
-    } else if (state == IntakeState.DEPLOYED_IDLE) {
-      state = IntakeState.INTAKING;
-    }
-  }
-
-  /**
-   * Stop the roller while keeping the pivot at the deployed position. No-op if already stowed or
-   * retracting.
-   */
-  public void stopRoller() {
-    if (state == IntakeState.DEPLOYING || state == IntakeState.INTAKING) {
-      state = IntakeState.DEPLOYED_IDLE;
-    }
-  }
-
-  /** Retract the intake to fully stowed position. */
-  public void retract() {
-    if (state == IntakeState.DEPLOYING
-        || state == IntakeState.INTAKING
-        || state == IntakeState.DEPLOYED_IDLE
-        || state == IntakeState.PARTIAL_STOWING
-        || state == IntakeState.PARTIAL_STOWED) {
-      state = IntakeState.RETRACTING;
     }
   }
 
@@ -285,10 +247,6 @@ public class Intake extends SubsystemBase {
    */
   public void eject() {
     setRollerVoltage(IntakeConstants.ROLLER_EJECT_VOLTS);
-  }
-
-  public IntakeState getState() {
-    return state;
   }
 
   /** Returns the pivot position in pivot axle rotations (0 = deployed). */

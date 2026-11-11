@@ -63,17 +63,6 @@ public class ShootCommand extends Command {
   // Saved here so isReadyToFire() can read it without recalculating each call.
   private Rotation2d currentTargetHeading = Rotation2d.kZero;
 
-  /** Aims and shoots without any driver translation input. Robot stays in place while aiming. */
-  public ShootCommand(
-      Drive drive,
-      Shooter shooter,
-      Hood hood,
-      Feeder feeder,
-      RollerFloor rollerFloor,
-      Intake intake) {
-    this(drive, shooter, hood, feeder, rollerFloor, intake, () -> 0.0, () -> 0.0);
-  }
-
   /**
    * Auto mode constructor. Does not require drive (so PathPlanner can still run paths in parallel),
    * but still commands drive heading when {@code lockHeading=true}. Use this for named commands

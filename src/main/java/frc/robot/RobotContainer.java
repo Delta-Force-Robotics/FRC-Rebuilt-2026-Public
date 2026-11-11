@@ -4,7 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -142,12 +141,6 @@ public class RobotContainer {
                 feeder,
                 rollerFloor));
 
-    // // Manual shooter speed and hood angle from the dashboard, for tuning the shot tables
-    // controller.povUp().onTrue(Commands.runOnce(shooter::runManualVelocity, shooter));
-    // controller.povUp().onTrue(Commands.runOnce(hood::setManualAngle, hood));
-    // controller.povDown().onTrue(Commands.runOnce(shooter::stop, shooter));
-    // controller.povDown().onTrue(Commands.runOnce(() -> hood.setAngle(0.0), hood));
-
     // L1: aim at the hub (or a pass zone) and shoot. The left stick still moves the robot.
     controller
         .L1()
@@ -162,16 +155,10 @@ public class RobotContainer {
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX()));
 
-    // Options: reset the heading to 0 degrees
+    // Options: reset the heading so the robot's current front is "away from the driver"
     controller
         .options()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.resetPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+        .onTrue(Commands.runOnce(drive::seedFieldCentric, drive).ignoringDisable(true));
   }
 
   /** Logs 3D component poses every loop for AdvantageScope visualization. */

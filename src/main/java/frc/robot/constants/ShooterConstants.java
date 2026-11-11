@@ -3,8 +3,6 @@ package frc.robot.constants;
 /** Tuning constants for the shooter. CAN IDs are in {@link DeviceConstants}. */
 public final class ShooterConstants {
 
-  public static final double SHOOT_VOLTS = 6.0;
-
   // Current limits
   public static final double STATOR_CURRENT_LIMIT_AMPS = 80.0;
   public static final double SUPPLY_CURRENT_LIMIT_AMPS = 40.0; // sustained per motor (4x = 160A)

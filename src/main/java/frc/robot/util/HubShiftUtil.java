@@ -66,36 +66,6 @@ public class HubShiftUtil {
     }
   }
 
-  /** Returns true if our alliance hub is currently active. */
-  public boolean isHubActive() {
-    Alliance alliance = DriverStation.getAlliance().orElse(null);
-    if (alliance == null) return false;
-    if (DriverStation.isAutonomousEnabled()) return true;
-    if (!DriverStation.isTeleopEnabled()) return false;
-    return computeHubActive(alliance, DriverStation.getMatchTime());
-  }
-
-  /**
-   * Returns seconds until our hub becomes active again, or -1 if already active or no more active
-   * windows are coming.
-   */
-  public double getSecondsUntilNextActiveShift() {
-    Alliance alliance = DriverStation.getAlliance().orElse(null);
-    if (alliance == null || !DriverStation.isTeleopEnabled()) return -1;
-
-    double t = DriverStation.getMatchTime();
-    if (computeHubActive(alliance, t)) return -1;
-
-    double[] boundaries = {105, 80, 55, 30};
-    for (double boundary : boundaries) {
-      if (boundary > t) continue;
-      if (computeHubActive(alliance, boundary + 0.001)) {
-        return t - boundary;
-      }
-    }
-    return -1;
-  }
-
   /** Returns seconds until the current shift ends, regardless of alliance. */
   public double getShiftTimeRemaining() {
     if (!DriverStation.isTeleopEnabled()) return -1;

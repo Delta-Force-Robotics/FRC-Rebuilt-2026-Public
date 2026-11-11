@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.DeviceConstants;
@@ -31,8 +30,6 @@ import org.littletonrobotics.junction.Logger;
  * two followers on the opposite side that spin the other way.
  */
 public class Shooter extends SubsystemBase {
-  private static final String MANUAL_RPS_KEY = "Shooter/Tuning/ManualRPS";
-
   private final TalonFX leader = new TalonFX(DeviceConstants.Shooter.LEADER_ID, Constants.RIO_BUS);
   private final TalonFX follower1 =
       new TalonFX(DeviceConstants.Shooter.FOLLOWER_1_ID, Constants.RIO_BUS);
@@ -101,9 +98,6 @@ public class Shooter extends SubsystemBase {
     follower1.optimizeBusUtilization();
     follower2.optimizeBusUtilization();
     follower3.optimizeBusUtilization();
-
-    // Manual speed for LUT tuning, editable from the dashboard
-    SmartDashboard.putNumber(MANUAL_RPS_KEY, 30.0);
   }
 
   @Override
@@ -147,11 +141,6 @@ public class Shooter extends SubsystemBase {
   public void runVelocity(double rotationsPerSecond) {
     velocitySetpointRPS = rotationsPerSecond;
     leader.setControl(velocityRequest.withVelocity(rotationsPerSecond));
-  }
-
-  /** Run at the dashboard "Shooter/Tuning/ManualRPS" speed (for LUT tuning). */
-  public void runManualVelocity() {
-    runVelocity(SmartDashboard.getNumber(MANUAL_RPS_KEY, 30.0));
   }
 
   /** Stop the shooter. */

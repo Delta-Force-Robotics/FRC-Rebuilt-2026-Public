@@ -11,8 +11,6 @@ public final class VisionConstants {
   public static final String LIMELIGHT_NAME = "limelight-back";
 
   // Pose estimation filter thresholds
-  public static final int MIN_TAG_COUNT = 1;
-  public static final double MAX_POSE_DISTANCE_METERS = 5.0;
   // Skip readings if the robot is spinning too fast (MegaTag2 accuracy drops with yaw rate)
   public static final double MAX_VISION_OMEGA_RAD_PER_SEC = 2.0;
   // Skip readings if the robot is moving too fast to avoid blur errors

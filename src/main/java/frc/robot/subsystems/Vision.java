@@ -10,13 +10,15 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.VisionConstants;
-import frc.robot.util.LimelightHelpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -52,7 +54,18 @@ public class Vision extends SubsystemBase {
     Pose3d[] visibleTagPoses = new Pose3d[0];
   }
 
+  private static final double[] EMPTY = {};
+
   private final Drive drive;
+
+  // Limelight NetworkTables entries
+  private final NetworkTable limelightTable =
+      NetworkTableInstance.getDefault().getTable(VisionConstants.LIMELIGHT_NAME);
+  private final DoubleArraySubscriber botposeEntry =
+      limelightTable.getDoubleArrayTopic("botpose_wpiblue").subscribe(EMPTY);
+  private final DoubleSubscriber tvEntry = limelightTable.getDoubleTopic("tv").subscribe(0.0);
+  private final DoubleArraySubscriber rawFiducialsEntry =
+      limelightTable.getDoubleArrayTopic("rawfiducials").subscribe(EMPTY);
   private final Random simRandom = new Random();
 
   // Odometry seeding state
@@ -114,13 +127,6 @@ public class Vision extends SubsystemBase {
     }
 
     Logger.recordOutput("Vision/OdometryHealthy", !odometryBad);
-    if (odometryBad) {
-      DriverStation.reportWarning(
-          String.format(
-              "[Vision] Odometry outside field: (%.2f, %.2f)",
-              currentPose.getX(), currentPose.getY()),
-          false);
-    }
   }
 
   /**
@@ -214,12 +220,11 @@ public class Vision extends SubsystemBase {
 
   /** Reads the MegaTag1 (6DOF) robot pose from the Limelight over NetworkTables. */
   private Reading readLimelight() {
-    String name = VisionConstants.LIMELIGHT_NAME;
     Reading in = new Reading();
 
     // botpose_wpiblue: x, y, z, roll, pitch, yaw, latency_ms, tagCount, tagSpan, avgDist, avgAmb
-    double[] botpose = LimelightHelpers.getBotPose_wpiBlue(name);
-    in.hasTarget = LimelightHelpers.getTV(name) && botpose.length >= 7;
+    double[] botpose = botposeEntry.get(EMPTY);
+    in.hasTarget = tvEntry.get(0.0) > 0.5 && botpose.length >= 7;
     if (in.hasTarget) {
       in.pose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees(botpose[5]));
       in.poseZ = botpose[2];
@@ -228,14 +233,15 @@ public class Vision extends SubsystemBase {
       if (botpose.length >= 10) in.avgTagDistance = botpose[9];
     }
 
-    // Find the worst ambiguity across all visible tags, and their poses for visualization.
+    // rawfiducials holds 7 values per visible tag: id, txnc, tync, ta, distToCamera,
+    // distToRobot, ambiguity. Find the worst ambiguity, and the tag poses for visualization.
     // With no per-tag data, keep the worst-case ambiguity so the reading fails the filter.
+    double[] raw = rawFiducialsEntry.get(EMPTY);
     List<Pose3d> tagPoses = new ArrayList<>();
-    var fiducials = LimelightHelpers.getRawFiducials(name);
-    if (fiducials.length > 0) in.worstTagAmbiguity = 0.0;
-    for (var fiducial : fiducials) {
-      in.worstTagAmbiguity = Math.max(in.worstTagAmbiguity, fiducial.ambiguity);
-      Constants.FIELD_LAYOUT.getTagPose(fiducial.id).ifPresent(tagPoses::add);
+    if (raw.length >= 7) in.worstTagAmbiguity = 0.0;
+    for (int i = 0; i + 7 <= raw.length; i += 7) {
+      in.worstTagAmbiguity = Math.max(in.worstTagAmbiguity, raw[i + 6]);
+      Constants.FIELD_LAYOUT.getTagPose((int) raw[i]).ifPresent(tagPoses::add);
     }
     in.visibleTagPoses = tagPoses.toArray(new Pose3d[0]);
     return in;

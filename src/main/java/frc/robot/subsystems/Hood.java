@@ -20,7 +20,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.DeviceConstants;
@@ -29,8 +28,6 @@ import org.littletonrobotics.junction.Logger;
 
 /** Hood that sets the shot angle, driven by a TalonFX through a 3:1 sector gear. */
 public class Hood extends SubsystemBase {
-  private static final String MANUAL_ANGLE_KEY = "Hood/Tuning/ManualAngle";
-
   private final TalonFX motor = new TalonFX(DeviceConstants.Hood.MOTOR_ID, Constants.RIO_BUS);
 
   private final PositionVoltage positionRequest = new PositionVoltage(0.0).withSlot(0);
@@ -77,9 +74,6 @@ public class Hood extends SubsystemBase {
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     motor.optimizeBusUtilization();
 
-    // Manual angle for LUT tuning, editable from the dashboard
-    SmartDashboard.putNumber(MANUAL_ANGLE_KEY, 0.25);
-
     // The hood motor is a Kraken X44. The simulated TalonFX assumes an X60 unless told otherwise.
     if (RobotBase.isSimulation()) {
       motor.getSimState().setMotorType(TalonFXSimState.MotorType.KrakenX44);
@@ -93,7 +87,6 @@ public class Hood extends SubsystemBase {
     Logger.recordOutput("Hood/Connected", motor.isConnected());
     Logger.recordOutput("Hood/PositionRotations", getPosition());
     Logger.recordOutput("Hood/GoalPositionRotations", targetPositionRotations);
-    Logger.recordOutput("Hood/AtGoal", atGoal());
     Logger.recordOutput("Hood/VelocityRotPerSec", velocity.getValueAsDouble());
     Logger.recordOutput("Hood/AppliedVolts", appliedVolts.getValueAsDouble());
     Logger.recordOutput("Hood/CurrentAmps", current.getValueAsDouble());
@@ -110,11 +103,6 @@ public class Hood extends SubsystemBase {
     motor.setControl(voltageRequest.withOutput(0.0));
   }
 
-  /** Move the hood to the dashboard "Hood/Tuning/ManualAngle" value (for LUT tuning). */
-  public void setManualAngle() {
-    setAngle(SmartDashboard.getNumber(MANUAL_ANGLE_KEY, 0.25));
-  }
-
   /** Return the hood to the home position (0 rotations) to protect it from damage. */
   public void retract() {
     setAngle(0.0);
@@ -123,11 +111,6 @@ public class Hood extends SubsystemBase {
   /** Returns the hood position in mechanism rotations. */
   public double getPosition() {
     return position.getValueAsDouble();
-  }
-
-  public boolean atGoal() {
-    return Math.abs(getPosition() - targetPositionRotations)
-        < HoodConstants.AT_GOAL_TOLERANCE_ROTATIONS;
   }
 
   @Override
