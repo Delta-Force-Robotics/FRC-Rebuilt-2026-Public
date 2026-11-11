@@ -1,0 +1,142 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.0,
+        "y": 1.25
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.418586401806412,
+        "y": 0.6943606854693336
+      },
+      "isLocked": false,
+      "linkedName": "A)RTFirstShootEnd"
+    },
+    {
+      "anchor": {
+        "x": 4.15,
+        "y": 0.7
+      },
+      "prevControl": {
+        "x": 3.595351333569732,
+        "y": 0.705079589521929
+      },
+      "nextControl": {
+        "x": 4.746806614963943,
+        "y": 0.6945343190897766
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.797592975724004,
+        "y": 0.788465813404432
+      },
+      "prevControl": {
+        "x": 5.339475576235782,
+        "y": 0.5155799096010321
+      },
+      "nextControl": {
+        "x": 6.224788571778322,
+        "y": 1.0429325864637948
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.988399911509954,
+        "y": 1.9159613430486853
+      },
+      "prevControl": {
+        "x": 6.002545617150615,
+        "y": 1.4762099874899173
+      },
+      "nextControl": {
+        "x": 5.9643727812725285,
+        "y": 2.6628992025305127
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.140174308526792,
+        "y": 3.161003529750924
+      },
+      "prevControl": {
+        "x": 5.955435347548459,
+        "y": 2.9925650653295035
+      },
+      "nextControl": {
+        "x": 6.389226472136996,
+        "y": 3.388080502454345
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.6,
+        "y": 3.5
+      },
+      "prevControl": {
+        "x": 7.148809808399846,
+        "y": 3.6552815206238543
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "A)RTFirstIntakeEnd"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5560165975103706,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.2381742738589316,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.99087136929451,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 4.045643153526944,
+      "rotationDegrees": 65.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "DeployIntakeTrigger",
+      "waypointRelativePos": 1.05,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.2,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "A)RTUnderTrench2Sweeps",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A)LT1.StartAndFirstIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A)LT2.ReturnToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand3.5s"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A)LT3.SecondIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A)LT2.ReturnToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand3.5s"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B)1.MoveToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand3.5s"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B)2.IntakeDepot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootCommand5s"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.39,
+        "y": 7.430000000000001
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.554356144872234,
+        "y": 7.430000000000001
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.889305733595558,
+        "y": 7.0839779830266725
+      },
+      "prevControl": {
+        "x": 6.454120368383716,
+        "y": 7.517797495891277
+      },
+      "nextControl": {
+        "x": 7.362917769408754,
+        "y": 6.6118524037042175
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.6,
+        "y": 4.57
+      },
+      "prevControl": {
+        "x": 7.6769135289412835,
+        "y": 5.303254878270248
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "A)LTFirstIntakeEnd"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "DeployIntakeTrigger",
+      "waypointRelativePos": 0.05,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "PartialStowIntakeTrigger",
+      "waypointRelativePos": 0.3,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "DeployIntakeTrigger",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.2,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "A)LTUnderTrench2Sweeps",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -0.0
+  },
+  "useDefaultConstraints": true
+}

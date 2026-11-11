@@ -1,63 +1,91 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.HubShiftUtil;
+import frc.robot.util.LimelightHelpers;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
-
-  private final RobotContainer m_robotContainer;
+/**
+ * Main robot class. AdvantageKit is used only as a logger here: everything passed to {@code
+ * Logger.recordOutput} is written to a .wpilog file on the robot and published over NetworkTables
+ * for AdvantageScope. There is no log replay.
+ */
+public class Robot extends LoggedRobot {
+  private Command autonomousCommand;
+  private final RobotContainer robotContainer;
 
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    // Setup 3A Limelights
+    LimelightHelpers.setupPortForwardingUSB(5); // limelight-left
+    LimelightHelpers.setupPortForwardingUSB(3); // limelight-right
+
+    // Record metadata
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata(
+        "GitDirty",
+        switch (BuildConstants.DIRTY) {
+          case 0 -> "All changes committed";
+          case 1 -> "Uncommitted changes";
+          default -> "Unknown";
+        });
+
+    // Write a log file on the real robot, and always publish to NetworkTables for live viewing.
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+    }
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.start();
+
+    // Disable LiveWindow to prevent SmartDashboard from sending large NT4 updates every loop.
+    LiveWindow.disableAllTelemetry();
+
+    robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
+    // Run the command scheduler, which polls buttons and runs all scheduled commands
     CommandScheduler.getInstance().run();
+
+    // Update hub shift state and publish it to the dashboard and logs
+    HubShiftUtil.getInstance().update();
+
+    // Log 3D component poses for AdvantageScope visualization
+    robotContainer.updateVisualization();
   }
 
   @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
+  public void disabledInit() {
+    robotContainer.resetSimulationField();
+  }
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // PathPlanner resets the pose to the path start, so vision can start correcting right away.
+    robotContainer.notifyAutoStart();
 
-    if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    autonomousCommand = robotContainer.getAutonomousCommand();
+    if (autonomousCommand != null) {
+      CommandScheduler.getInstance().schedule(autonomousCommand);
     }
   }
-
-  @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void autonomousExit() {}
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    // Cancel any still-running autonomous command when teleop starts
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
   }
-
-  @Override
-  public void teleopPeriodic() {}
-
-  @Override
-  public void teleopExit() {}
 
   @Override
   public void testInit() {
@@ -65,8 +93,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
-
-  @Override
-  public void testExit() {}
+  public void simulationPeriodic() {
+    robotContainer.updateSimulation();
+  }
 }
